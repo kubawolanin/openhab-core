@@ -28,6 +28,7 @@
     <module>org.openhab.ui.basicui</module>
     <module>org.openhab.ui.classicui</module>
     <module>org.openhab.ui.paperui</module>
+    <module>org.openhab.ui.homebuilder</module>
   </modules>
 
 </project>
