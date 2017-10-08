@@ -53,7 +53,10 @@
         </template>
         <template slot="option" scope="props">
             <img class="option__image" :src="generateIcon(props.option.icon)" />
-            <div class="option__desc">{{ props.option.name }}</div>
+            <div class="option__desc">
+                <span class="option__title">{{ props.option.name }}</span>
+                <span class="option__small text-muted">{{ props.option.type || ''}}</span>
+            </div>
         </template>
     </multiselect>
 </template>
@@ -62,6 +65,13 @@
 .option__image,
 .option__desc {
     display: inline-block;
+    vertical-align: middle;
+
+    .option__small {
+        display: block;
+        font-weight: normal;
+        font-size: .725rem;
+    }
 }
 
 .multiselect__element {

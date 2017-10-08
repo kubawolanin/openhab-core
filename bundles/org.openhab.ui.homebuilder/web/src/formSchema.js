@@ -38,6 +38,66 @@ function newRoomTag(newTag, id, options, value) {
 };
 
 /**
+ * Returns a group function for a given
+ * Item's type
+ * @param {*} type 
+ */
+function getGroupFunc(type) {
+    let func = '';
+
+    switch (type) {
+        case 'Switch':
+            func = 'OR(ON, OFF)';
+            break;
+        case 'Contact':
+            func = 'OR(OPEN, CLOSED)';
+            break;
+        case 'Rollershutter':
+            func = 'OR(UP, DOWN)';
+            break;
+        case 'Number':
+            func = 'AVG';
+            break;
+        default:
+            break;
+    }
+
+    return func;
+}
+
+/**
+ * Creates a custom device entry
+ * 
+ * @param {string} newTag 
+ * @param {string} id 
+ * @param {Object} options 
+ * @param {string} value 
+ */
+function newDeviceTag(newTag, id, options, value) {
+    let split = newTag.split(':');
+    let type = split.length > 1 ? _.first(split).trim() : 'Switch';
+    let name = split.length > 1 ? split[1].trim() : newTag;
+    let groupFunc = getGroupFunc(type);
+
+    const tag = {
+        name: name,
+        icon: 'none',
+        type: type + ':' + groupFunc,
+        unit: '[(%d)]',
+        custom: true,
+        value: s(name)
+            .trim()
+            .toLowerCase()
+            .cleanDiacritics()
+            .classify()
+            .value()
+    }
+
+    devices.push(tag);
+    value.push(tag);
+};
+
+/**
  * Is being executed when 
  * collection of rooms in floor multiselect field
  * has changed.
@@ -80,7 +140,8 @@ function roomsChanged(model, newVal, oldVal, field) {
                 trackBy: 'value',
                 label: 'name',
                 searchable: true,
-                taggable: false
+                taggable: true,
+                onNewTag: newDeviceTag
             },
             values: devices
         });

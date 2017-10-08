@@ -147,18 +147,13 @@ export default {
             _.forOwn(roomsModel, (room) => { stack = [...stack, ...room] });
           }
 
-          stack.forEach(item => { item.name = this.translate(item); });
+          stack.forEach(item => { 
+            if (!item.custom) {
+              item.name = this.$i18n.t(item.value);
+            }
+          });
           this.$forceUpdate();
         });
-    },
-
-    /**
-     * Returns localized label for given entity
-     */
-    translate: function(item) {
-      if (!item.custom) {
-        return this.$i18n.t(item.value);
-      }
     },
 
     resizeAffix(event) {

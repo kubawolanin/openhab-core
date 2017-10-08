@@ -59,7 +59,7 @@ export default {
             let content = this.content;
             if (typeof content === 'object') {
                 this.$http
-                    .put('items', { body: content })
+                    .put('items', content)
                     .then(response => {
                         if (response.status === 200) {
                             this.createText = 'Done!';

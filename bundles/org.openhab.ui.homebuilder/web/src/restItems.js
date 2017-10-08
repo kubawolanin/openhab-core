@@ -159,6 +159,7 @@ function addTags(device, model) {
     }
 
     switch (device.value) {
+        case 'Lamp':
         case 'Light':
             tags = ['Lighting'];
         case 'Motion':
