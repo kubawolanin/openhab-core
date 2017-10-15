@@ -12,7 +12,7 @@
 
 <style lang="scss">
 .navbar {
-  background: #f9761f;
+  background: #E64A19;
   color: #fff;
 }
 
