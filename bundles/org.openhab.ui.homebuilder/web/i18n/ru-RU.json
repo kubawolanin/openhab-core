@@ -1,9 +1,9 @@
 {
-    "GroundFloor": "Цокольный этаж",
-    "FirstFloor": "Первый этаж",
-    "SecondFloor": "Второй этаж",
-    "ThirdFloor": "Третий этаж",
-    "FourthFloor": "Четвертый этаж",
+    "GroundFloor": "Первый этаж",
+    "FirstFloor": "Второй этаж",
+    "SecondFloor": "Третий этаж",
+    "ThirdFloor": "Четвертый этаж",
+    "FourthFloor": "Пятый этаж",
 
     "Attic": "Чердак",
     "Balcony": "Балкон",
