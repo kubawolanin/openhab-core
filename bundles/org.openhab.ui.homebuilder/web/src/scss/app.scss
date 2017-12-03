@@ -116,9 +116,18 @@ pre {
 }
 
 .field-switch input:checked~.label,
-.multiselect__option--highlight,
-.multiselect__tag {
+.multiselect__option--highlight {
     background: var(--color-primary) !important;
+}
+
+.multiselect__tag {
+    background: #dedede !important;
+    color: rgba(0,0,0,.87);
+    border-radius: 24px;
+}
+
+.multiselect__tag-icon {
+    border-radius: 24px;
 }
 
 .floors-number {

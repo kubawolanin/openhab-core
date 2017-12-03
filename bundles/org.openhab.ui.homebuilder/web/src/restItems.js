@@ -200,6 +200,11 @@ export function getItems(model) {
     return items;
 }
 
+export function getItemByName(name, model) {
+    var items = generateItemsJson(model);
+    return _.find(items, { name: name });
+}
+
 /**
  * Returns array of Items
  * without `entryType` which is not a valid parameter

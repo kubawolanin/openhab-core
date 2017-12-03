@@ -3,7 +3,7 @@
     <div class='col-sm-6' id="form">
       <vue-form-generator :schema='schema' :model='model' :options='formOptions'>
       </vue-form-generator>
-      <pre class='language-json hidden-xs-up'><code>{{ model }}</code></pre>
+      <pre class='language-json'><code>{{ generateSitemapJson(model) }}</code></pre>
     </div>
     <div class='col-sm-6'>
       <affix id="preview" relative-element-selector="#form" :offset="{ top: 65, bottom: 0 }">
@@ -13,30 +13,34 @@
 
         <collapse v-if="model && model.filesGenerated.includes('habpanel')" :uid="'habpanel'" :heading="'HABPanel Dashboard'" :content='generateDashboard(model)'></collapse>
       </affix>
+
+      <sitemap :content='generateSitemapJson(model)'></sitemap>
     </div>
   </div>
 </template>
 
-<style lang="scss" src="./scss/app.scss">
-</style>
+<style lang="scss" src="./scss/app.scss"></style>
 
 <script>
-import * as _ from 'lodash'
-import * as s from 'underscore.string'
-import Vue from 'vue'
-import Collapse from './Collapse.vue'
 import { component as VueFormGenerator } from 'vue-form-generator'
 import { floors, rooms, objects, languages, OBJECTS_SUFFIX } from './definitions'
-import * as schema from './formSchema'
+import { generateDashboard } from './habpanel'
 import { generateItems } from './textItems'
 import { generateItemsJson } from './restItems'
-import { generateDashboard } from './habpanel'
-import { sitemapName, generateSitemap } from './sitemap'
+import { generateSitemap } from './sitemap'
+import { sitemapName, generateSitemapJson } from './restSitemap'
+import * as _ from 'lodash'
+import * as s from 'underscore.string'
+import * as schema from './formSchema'
+import Collapse from './Collapse.vue'
+import Sitemap from './Sitemap.vue'
+import Vue from 'vue'
 
 export default {
   components: {
     VueFormGenerator,
-    Collapse
+    Collapse,
+    Sitemap
   },
 
   data() {
@@ -86,6 +90,12 @@ export default {
      * Generates textual Sitemap
      */
     generateSitemap,
+
+    /**
+     * Generates JSON object
+     * with Sitemap description
+     */
+    generateSitemapJson,
 
     /**
      * Generates HABPanel dashboard JSON config

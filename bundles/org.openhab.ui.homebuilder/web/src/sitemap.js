@@ -1,120 +1,48 @@
-import * as _ from 'lodash'
 import * as s from 'underscore.string'
-import { floors } from './definitions'
-import { getChosenObjects, getItems, GROUP_PREFIX } from './restItems'
+import { generateSitemapJson } from './restSitemap'
 
-export let sitemapName = '';
-
-function getFloorItem(floor, model) {
-    let floorFrame = 'Frame ';
-
-    if (model.floorsCount > 1) {
-        let icon = model.itemsIcons && floor.icon ? '" icon="' + floor.icon : '';
-        floorFrame += 'label="' + (floor.name || floor.value) + icon + '" ';
-    }
-
-    return floorFrame + '{';
+function cleanLabel(label) {
+    return label.replace(/\[(.*?)\]/, '').trim();
 }
 
-function getRoomGroups(floor, model, floorPrefix) {
-    if (floor && floor.value && !_.isUndefined(model[floor.value])) {
-        return model[floor.value].map(room =>
-            s.pad(' ', 8) + 'Group item=' + floorPrefix + room.value
-        );
-    }
+function addWidgets(widget, pad) {
+    let source = widget.linkedPage ? widget.linkedPage.widgets : widget.widgets;
+    return source.map(widget => {
+        let line = widget.type;
 
-    return [];
-}
+        line += widget.item ? ` item=${widget.item.name}` : '';
+        line += widget.label ? ` label="${cleanLabel(widget.label)}"` : '';
+        line += widget.icon && widget.icon !== 'none' ? ` icon="${widget.icon}"` : '';
 
-function addFloorFrames(model) {
-    let lines = [];
-
-    for (let i = 0; i < model.floorsCount; i++) {
-        let floor = floors[i];
-        let floorPrefix = '';
-
-        if (model.floorsCount > 1) {
-            floorPrefix = floor.abbr + '_';
+        if ((widget.linkedPage && widget.linkedPage.widgets.length) ||
+            widget.widgets.length) {
+            let space = s.pad(' ', pad + 2 || 6);
+            line += ' {\n';
+            line += space;
+            line += addWidgets(widget).join(`\n${space}`);
+            line += `\n${s.pad(' ', pad)}}\n`;
         }
 
-        lines = [
-            ...lines,
-            s.pad(' ', 4) + getFloorItem(floor, model),
-            ...getRoomGroups(floor, model, floorPrefix),
-            s.pad(' ', 4) + '}'
-        ];
-
-        if (i < model.floorsCount) {
-            lines.push('');
-        }
-    }
-
-    return lines;
+        return s.pad(' ', pad || 4) + line;
+    })
 }
 
-function getTextGroup(group) {
-    let textGroup = `Text label="${group.label}"`;
-    textGroup += group.category && group.category !== 'none' ? ` icon="${group.category}" {` : ` {`;
-    return textGroup;
-}
-
-function getDefaultItems(groupItems, items) {
-    return groupItems.map(item => {
-        let room = _.find(items, { name: item.groupNames[0] });
-        return s.pad(' ', 12) + `Default item=${item.name} label="${room.label}"`;
-    });
-}
-
-function getObjectItems(model) {
-    const items = getItems(model);
-    let chosenObjects = getChosenObjects(model);
-    let objects = chosenObjects.map((object, index) => {
-        let groupName = GROUP_PREFIX + object;
-        let group = _.find(items, { name: groupName });
-        let groupItems = _.filter(items, item =>
-            item.groupNames && item.groupNames.includes(groupName)
-        );
-
-        let result = [
-            s.pad(' ', 8) + getTextGroup(group),
-            ...getDefaultItems(groupItems, items),
-            s.pad(' ', 8) + '}'
-        ];
-
-        if (index < chosenObjects.length - 1) {
-            result.push('');
-        }
-
-        return result;
-    });
-
-    return _.flatten(objects);
-}
-
-function addObjectsFrame(model) {
-    let objectItems = getObjectItems(model);
-
-    if (objectItems.length) {
+function addFrames(sitemap) {
+    return sitemap.homepage.widgets.map(widget => {
         return [
-            s.pad(' ', 4) + 'Frame {',
-            ...objectItems,
-            s.pad(' ', 4) + '}'
-        ];
-    }
-
-    return [];
+            s.pad(' ', 4) + widget.type + ` label="${widget.label}" icon="${widget.icon}" {`,
+            addWidgets(widget, 6).join('\n'),
+            s.pad(' ', 4) + '}\n'
+        ].join('\n');
+    });
 }
 
 export function generateSitemap(model) {
-    sitemapName = s(model.homeName)
-        .slugify()
-        .value()
-        .replace(/-/g, '_');
+    let sitemap = generateSitemapJson(model);
 
     return [
-        'sitemap ' + sitemapName + ' label="' + model.homeName + '" {',
-        ...addFloorFrames(model),
-        ...addObjectsFrame(model),
+        'sitemap ' + sitemap.name + ' label="' + sitemap.label + '" {',
+        ...addFrames(sitemap),
         '}'
     ].join('\n');
 }

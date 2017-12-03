@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import Clipboard from 'v-clipboard'
+import Vue from 'vue'
 
 Vue.use(Clipboard);
 
